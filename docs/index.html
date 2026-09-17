@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de Bord — Projets OCBA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Barre supérieure ===== -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-mark">OCBA</span>
+      <div class="brand-text">
+        <h1>Tableau de Bord des Projets</h1>
+        <p>Office cantonal des bâtiments &middot; Suivi &amp; pilotage des projets immobiliers</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="data-status" id="data-status">
+        <span class="dot"></span>
+        <span id="data-status-text">Données d'exemple</span>
+      </div>
+      <label class="btn btn-primary" for="file-import">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v2h12v-2a1 1 0 1 1 2 0v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Z"/></svg>
+        Importer un fichier
+      </label>
+      <input type="file" id="file-import" accept=".xlsx,.xls" hidden>
+      <button class="btn btn-ghost" id="btn-reset-data" title="Revenir aux données d'exemple">Réinitialiser</button>
+    </div>
+  </header>
+
+  <!-- ===== Onglets ===== -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="vue-ensemble">Vue d'ensemble</button>
+    <button class="tab" data-tab="chefs-projet">Chefs de projet</button>
+    <button class="tab" data-tab="chronologie">Chronologie</button>
+    <button class="tab" data-tab="donnees">Données</button>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ===== Panneau de filtres ===== -->
+    <aside class="filters-panel" id="filters-panel">
+      <div class="filters-header">
+        <h2>Filtres</h2>
+        <button class="link-btn" id="btn-clear-filters">Tout effacer</button>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-search">Recherche libre</label>
+        <input type="search" id="f-search" placeholder="Projet, bâtiment, chef de projet…">
+      </div>
+
+      <div class="filter-group">
+        <label for="f-chef">Chef de Projet</label>
+        <select id="f-chef" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-site">Site</label>
+        <select id="f-site" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-statut">Statut</label>
+        <select id="f-statut" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-commune">Commune</label>
+        <select id="f-commune" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-destination">Destination</label>
+        <select id="f-destination" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-politique">Politique publique</label>
+        <select id="f-politique" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-proprietaire">Propriétaire</label>
+        <select id="f-proprietaire" multiple></select>
+      </div>
+
+      <div class="filter-group">
+        <label for="f-loi">Loi</label>
+        <select id="f-loi" multiple></select>
+      </div>
+
+      <div class="filter-footer">
+        <span id="filter-count-info">0 projet</span>
+      </div>
+    </aside>
+
+    <!-- ===== Contenu principal ===== -->
+    <main class="content">
+
+      <!-- KPI -->
+      <section class="kpi-grid" id="kpi-grid"></section>
+
+      <!-- Onglet Vue d'ensemble -->
+      <section class="tab-panel active" data-panel="vue-ensemble">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Projets par site (top 10)</h3></div>
+            <div class="card-body"><div id="chart-sites" class="chart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Répartition par statut</h3></div>
+            <div class="card-body"><div id="chart-statut" class="chart"></div></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Budget cumulé par politique publique</h3></div>
+            <div class="card-body"><div id="chart-politique" class="chart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Projets par commune (top 10)</h3></div>
+            <div class="card-body"><div id="chart-commune" class="chart"></div></div>
+          </div>
+        </div>
+        <div class="grid-1">
+          <div class="card">
+            <div class="card-header"><h3>Avancement par destination</h3></div>
+            <div class="card-body"><div id="chart-destination" class="chart chart-tall"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Onglet Chefs de projet -->
+      <section class="tab-panel" data-panel="chefs-projet">
+        <div class="grid-1">
+          <div class="card">
+            <div class="card-header"><h3>Charge de travail par chef de projet</h3></div>
+            <div class="card-body"><div id="chart-chef" class="chart chart-tall"></div></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>Budget géré par chef de projet</h3></div>
+            <div class="card-body"><div id="chart-chef-budget" class="chart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Statuts par chef de projet</h3></div>
+            <div class="card-body"><div id="chart-chef-statut" class="chart"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Onglet Chronologie -->
+      <section class="tab-panel" data-panel="chronologie">
+        <div class="grid-1">
+          <div class="card">
+            <div class="card-header">
+              <h3>Mises en service par année</h3>
+            </div>
+            <div class="card-body"><div id="chart-timeline" class="chart"></div></div>
+          </div>
+        </div>
+        <div class="grid-1">
+          <div class="card">
+            <div class="card-header">
+              <h3>Chronogramme des projets (échantillon filtré)</h3>
+              <p class="card-subtitle">Bleu = période prévue &middot; Vert = période réelle jusqu'à mise en service</p>
+            </div>
+            <div class="card-body"><div id="chart-gantt" class="chart chart-tall"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Onglet Données -->
+      <section class="tab-panel" data-panel="donnees">
+        <div class="card">
+          <div class="card-header">
+            <h3>Liste détaillée des projets</h3>
+            <span id="table-count-info" class="card-subtitle"></span>
+          </div>
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table id="data-table">
+                <thead>
+                  <tr>
+                    <th data-key="projet">Projet</th>
+                    <th data-key="site">Site</th>
+                    <th data-key="chefProjet">Chef de projet</th>
+                    <th data-key="statut">Statut</th>
+                    <th data-key="budget">Budget (CHF)</th>
+                    <th data-key="avancement">Avancement</th>
+                    <th data-key="dateMiseEnService">Mise en service</th>
+                  </tr>
+                </thead>
+                <tbody id="data-table-body"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <span>Prototype interne &middot; données générées à partir du fichier Excel importé &middot; <span id="last-update"></span></span>
+  </footer>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
